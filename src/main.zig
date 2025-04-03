@@ -35,7 +35,7 @@ const Colors = enum {
     ANSI_COLOR_CYAN,
     ANSI_COLOR_RESET,
 };
-const COLORS_LIST = [_][]const u8{ "\x1b[31m", "\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m", "\x1b[0m" };
+const COLORS_LIST = [_][]const u8{ "\x1b[31;;;48;5;160m", "\x1b[49m\x1b[32m", "\x1b[33m", "\x1b[34m", "\x1b[35m", "\x1b[36m", "\x1b[0m" };
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -75,11 +75,11 @@ pub fn main() !void {
 
     // create a new buffer with max height given by the height of the terminal
     var buf_iter = std.mem.splitAny(u8, buf_orignal, "\n");
-    var k:i32 = 0;
+    var k: i32 = 0;
     while (buf_iter.next()) |line| : (k += 1) {
         try buf_list.appendSlice(line);
         try buf_list.appendSlice("\n");
-        if (k > w.ws_row-3) {
+        if (k > w.ws_row - 3) {
             break;
         }
     }
@@ -125,7 +125,7 @@ pub fn main() !void {
             std.process.exit(0);
         } else if (read == 127 and i > 0) {
             i -= 1;
-            _ = try stdout.write("\x1b[D");
+            _ = try stdout.print("\x1b[39m\x1b[49m{s}{c}\x1b[D\x1b[D", .{ COLORS_LIST[@intFromEnum(Colors.ANSI_COLOR_CYAN)], buf[i + 1] });
             continue;
         }
 
